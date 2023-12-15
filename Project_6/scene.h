@@ -25,11 +25,12 @@
 */
 struct GameState {
     // ————— GAME OBJECTS ————— //
-    Map                 *map;
-    Entity              *player;
-    std::vector<Entity*> enemies;
-    Entity              *collectables;
-    GLuint               fontsheet_texture_id;
+    Map                  *map;
+    Entity               *player;
+    std::vector<Entity *> enemies;
+    Entity               *collectables;
+    GLuint                fontsheet_texture_id;
+    std::vector<GLuint>   textures;
     // Entity *enemies;
 
     // ————— AUDIO ————— //
@@ -49,8 +50,8 @@ class Scene {
 
     // ————— METHODS ————— //
     virtual void initialize(Entity *player, GLuint g_fontsheet_texture_id, float view_x, float view_y) = 0;
-    virtual void update(float delta_time)                                  = 0;
-    virtual void render(ShaderProgram *program)                            = 0;
+    virtual void update(float delta_time)                                                              = 0;
+    virtual void render(ShaderProgram *program)                                                        = 0;
 
     // ————— GETTERS ————— //
     GameState const get_state() const { return m_state; }

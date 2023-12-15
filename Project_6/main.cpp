@@ -143,9 +143,19 @@ void initialize() {
     g_player->m_animations[g_player->HIT]      = new int[2]{84, 85};
     g_player->m_animations[g_player->DIE]      = new int[14]{98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111};
 
+    g_player->m_animation_length[g_player->WALK]     = 8;
+    g_player->m_animation_length[g_player->IDLE]     = 8;
+    g_player->m_animation_length[g_player->ATTACK_1] = 4;
+    g_player->m_animation_length[g_player->ATTACK_2] = 4;
+    g_player->m_animation_length[g_player->JUMP]     = 4;
+    g_player->m_animation_length[g_player->FALL]     = 4;
+    g_player->m_animation_length[g_player->HIT]      = 2;
+    g_player->m_animation_length[g_player->DIE]      = 14;
+
     // g_player->m_animation_indices = g_player->m_animations[g_player->WALK];  // start George looking left
     // g_player->move_left();
-    g_player->set_curr_state(g_player->WALK_LEFT);
+    g_player->set_curr_state(g_player->IDLE);
+    // g_player->set_curr_state(g_player->WALK_LEFT);
     // g_player->set_movement(glm::vec3(-1.0f, 0.0f, 0.0f));
     // g_player->m_animation_frames  = 4;
     g_player->m_animation_index = 0;
@@ -172,7 +182,7 @@ void initialize() {
 
     Mix_Music* bgm = Mix_LoadMUS("assets/audio/Malicious.mp3");
     Mix_PlayMusic(bgm, -1);
-    Mix_VolumeMusic(MIX_MAX_VOLUME / 2);
+    Mix_VolumeMusic(MIX_MAX_VOLUME / 6);
 
     // ————— BLENDING ————— //
     glEnable(GL_BLEND);
@@ -293,6 +303,7 @@ void update() {
         return;
     }
     while (delta_time >= FIXED_TIMESTEP) {
+    // while (delta_time >= FIXED_TIMESTEP && g_game_status == RUNNING) {
         // ————— UPDATING THE SCENE (i.e. map, character, enemies...) ————— //
         g_current_scene->update(FIXED_TIMESTEP);
 
@@ -341,6 +352,7 @@ void update() {
 
         g_view_matrix = glm::translate(g_view_matrix, glm::vec3(-x_clamp, -y_clamp, 0));
     }
+    // std::cout << "Main update: done" << std::endl;
 }
 
 void render() {
@@ -376,6 +388,7 @@ void render() {
     }
 
     SDL_GL_SwapWindow(g_display_window);
+    // std::cout << "Main render: done" << std::endl;
 }
 
 void shutdown() {

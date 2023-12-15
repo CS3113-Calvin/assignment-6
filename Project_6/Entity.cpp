@@ -25,38 +25,38 @@
 #include "glm/mat4x4.hpp"
 
 Entity::Entity() {
-    // ––––– PHYSICS ––––– //
-    m_position     = glm::vec3(0.0f);
-    m_velocity     = glm::vec3(0.0f);
-    m_acceleration = glm::vec3(0.0f);
+    // // ––––– PHYSICS ––––– //
+    // m_position     = glm::vec3(0.0f);
+    // m_velocity     = glm::vec3(0.0f);
+    // m_acceleration = glm::vec3(0.0f);
 
-    // ––––– TRANSLATION ––––– //
-    m_movement     = glm::vec3(0.0f);
-    m_speed        = 0;
-    m_model_matrix = glm::mat4(1.0f);
+    // // ––––– TRANSLATION ––––– //
+    // m_movement     = glm::vec3(0.0f);
+    // m_speed        = 0;
+    // m_model_matrix = glm::mat4(1.0f);
 
-    // m_entity_type = ENEMY;
-    // m_ai_type     = WALKER;
-    // m_ai_state    = WALKING;
-    /* Enemies' stuff */
-    GLuint enemy_texture_id = Utility::load_texture("assets/images/enemy/xeno-grunt-run.png");
-    m_animations[WALK]      = new int[8]{0, 1, 2, 3, 4, 5, 6, 7};
-    m_animation_index       = 0;
-    m_animation_time        = 0.0f;
-    m_entity_type           = ENEMY;
-    m_animation_cols        = 8;
-    m_animation_rows        = 1;
-    m_scale                 = 0.7f;
-    m_width                 = 0.7f;
-    m_height                = 0.7f;
-    set_ai_type(GUARD);
-    set_ai_state(AI_IDLE);
-    m_texture_id = enemy_texture_id;
-    // set_movement(glm::vec3(1.0f));
-    set_speed(1.0f);
-    // set_acceleration(glm::vec3(0.0f, -9.81f, 0.0f));
-    // set_curr_state(WALK_LEFT);
-    m_animation_indices = m_animations[WALK];
+    // // m_entity_type = ENEMY;
+    // // m_ai_type     = WALKER;
+    // // m_ai_state    = WALKING;
+    // /* Enemies' stuff */
+    // GLuint enemy_texture_id = Utility::load_texture("assets/images/enemy/xeno-grunt-run.png");
+    // m_animations[WALK]      = new int[8]{0, 1, 2, 3, 4, 5, 6, 7};
+    // m_animation_index       = 0;
+    // m_animation_time        = 0.0f;
+    // m_entity_type           = ENEMY;
+    // m_animation_cols        = 8;
+    // m_animation_rows        = 1;
+    // m_scale                 = 0.7f;
+    // m_width                 = 0.7f;
+    // m_height                = 0.7f;
+    // set_ai_type(GUARD);
+    // set_ai_state(AI_IDLE);
+    // m_texture_id = enemy_texture_id;
+    // // set_movement(glm::vec3(1.0f));
+    // set_speed(1.0f);
+    // // set_acceleration(glm::vec3(0.0f, -9.81f, 0.0f));
+    // // set_curr_state(WALK_LEFT);
+    // m_animation_indices = m_animations[WALK];
 }
 
 Entity::Entity(EntityType entity_type) {
@@ -73,7 +73,16 @@ Entity::Entity(EntityType entity_type) {
     set_entity_type(entity_type);
 }
 
+void Entity::spawn(Entity* player, float view_x, float view_y) {
+    glm::vec3 player_position = player->get_position();
+    view_x = view_x / 2;
+    view_y = view_y / 2;
+    float rand_x = (rand() % 2) ? Utility::rand_float_range(player_position.x + view_x, player_position.x + view_x + 5.0f) : Utility::rand_float_range(player_position.x-view_x - 5.0f, player_position.x-view_x);
+    float rand_y = (rand() % 2) ? Utility::rand_float_range(player_position.y + view_y, player_position.y + view_y + 5.0f) : Utility::rand_float_range(player_position.y-view_y - 5.0f, player_position.y-view_y);
 
+    set_position(glm::vec3(rand_x, rand_y, 0.0f));
+    activate();
+}
 
 void Entity::initialize(EntityType entity_type, const char* name, Entity* player, float view_x, float view_y) {
     set_entity_type(entity_type);
@@ -88,9 +97,14 @@ void Entity::initialize(EntityType entity_type, const char* name, Entity* player
             // ––––– TRANSLATION ––––– //
             // spawn outside player view
             // m_position     = glm::vec3(0.0f);
-            float rand_x = (rand() % 2) ? Utility::rand_float_range(view_x, view_x + 5.0f) : Utility::rand_float_range(-view_x - 5.0f, -view_x);
-            float rand_y = (rand() % 2) ? Utility::rand_float_range(view_y, view_y + 5.0f) : Utility::rand_float_range(-view_y - 5.0f, -view_y);
-            m_position   = glm::vec3(rand_x, rand_y, 0.0f);
+
+            spawn(player, view_x, view_y);
+            // glm::vec3 player_position = player->get_position();
+            // view_x = view_x / 2;
+            // view_y = view_y / 2;
+            // float rand_x = (rand() % 2) ? Utility::rand_float_range(player_position.x + view_x, player_position.x + view_x + 5.0f) : Utility::rand_float_range(player_position.x-view_x - 5.0f, player_position.x-view_x);
+            // float rand_y = (rand() % 2) ? Utility::rand_float_range(player_position.y + view_y, player_position.y + view_y + 5.0f) : Utility::rand_float_range(player_position.y-view_y - 5.0f, player_position.y-view_y);
+            // m_position   = glm::vec3(rand_x, rand_y, 0.0f);
             m_movement     = glm::vec3(0.0f);
             m_speed        = 0;
             m_model_matrix = glm::mat4(1.0f);
@@ -101,9 +115,10 @@ void Entity::initialize(EntityType entity_type, const char* name, Entity* player
             // set_acceleration(glm::vec3(0.0f, -9.81f, 0.0f));
 
             // ----- SCALE ----- //
-            m_scale                 = 0.7f;
-            m_width                 = 0.7f;
-            m_height                = 0.7f;
+            // m_scale                 = 0.7f;
+            m_scale                 = 0.9f;
+            m_width                 = 0.5f;
+            m_height                = 0.5f;
 
             // ––––– TEXTURE ––––– //
             // char buf[100];
@@ -111,27 +126,51 @@ void Entity::initialize(EntityType entity_type, const char* name, Entity* player
             // strcat(buf, name);
             // strcat(buf, ".png");
             // GLuint enemy_texture_id = Utility::load_texture("assets/images/enemy/xeno-grunt-run.png");
-            GLuint enemy_texture_id = Utility::load_texture(name);
-            m_texture_id = enemy_texture_id;
+            // GLuint enemy_texture_id = Utility::load_texture(name);
+            // m_texture_id = enemy_texture_id;
 
             // ----- ENEMY INFO ----- //
             m_entity_type = ENEMY;
-            // m_ai_type     = WALKER;
-            // m_ai_state    = WALKING;
             set_ai_type(GUARD);
-            set_ai_state(AI_IDLE);
+            set_ai_state(AI_WALK);
+            // set_ai_state(AI_IDLE);
 
             // ----- ANIMATION ----- //
             // enemy specific
-                m_animations[WALK]      = new int[8]{0, 1, 2, 3, 4, 5, 6, 7};
+            std::cout << "current name: " << name << std::endl;
+            if (name == "assets/images/enemy/ducky_3_spritesheet.png") {
+                m_animations[WALK]     = new int[8]{6, 7, 8, 9, 10, 11};
+                m_animations[IDLE]     = new int[2]{0, 1};
                 // m_animation_frames[WALK] = 8;
 
                 m_animation_cols        = 6;
                 m_animation_rows        = 4;
+                m_animation_length[WALK] = 8;
+                m_animation_length[IDLE] = 2;
                 // set initial animation
-                m_animation_indices = m_animations[WALK];
-            
-
+            } else if (name == "assets/images/enemy/chicken-walk.png") {
+                m_animations[WALK]     = new int[4]{0, 1, 2, 3};
+                m_animations[IDLE]     = new int[1]{0};
+                m_animation_cols        = 4;
+                m_animation_rows        = 1;
+                m_animation_length[WALK] = 4;
+                m_animation_length[IDLE] = 1;
+            } else if (name == "assets/images/enemy/piggy_sheet.png") {
+                m_animations[WALK]     = new int[5]{0, 1, 2, 3, 4};
+                m_animations[IDLE]     = new int[4]{5, 6, 7, 8};
+                m_animation_cols        = 5;
+                m_animation_rows        = 2;
+                m_animation_length[WALK] = 5;
+                m_animation_length[IDLE] = 2;
+            } else {
+                std::cout << "unknown name: " << name << std::endl;
+                assert(false);
+            }
+            set_curr_state(WALK_LEFT);
+            m_animation_indices = m_animations[WALK];
+    // m_state.textures.push_back(Utility::load_texture());
+    // m_state.textures.push_back(Utility::load_texture());
+    // m_state.textures.push_back(Utility::load_texture("piggy_sheet.png"));
     }
 }
 
@@ -278,89 +317,100 @@ void const Entity::set_curr_state(int new_state) {
                 m_movement.x        = 0.0f;
                 m_movement.y        = 0.0f;
                 m_animation_indices = m_animations[ATTACK_1];
-                m_animation_frames  = 4;
-                m_animation_index   = 0;
+                // m_animation_frames  = 4;
+                // m_animation_index   = 0;
                 break;
 
             case ATTACK_2:
                 m_movement.x        = 0.0f;
                 m_movement.y        = 0.0f;
                 m_animation_indices = m_animations[ATTACK_2];
-                m_animation_frames  = 3;
-                m_animation_index   = 0;
+                // m_animation_frames  = 3;
+                // m_animation_index   = 0;
                 break;
 
             case JUMP:
                 m_movement.y        = 1.0f;
                 m_animation_indices = m_animations[JUMP];
-                m_animation_frames  = 4;
-                m_animation_index   = 0;
+                // m_animation_frames  = 4;
+                // m_animation_index   = 0;
                 break;
 
             case FALL:
                 m_movement.y        = -1.0f;
                 m_animation_indices = m_animations[FALL];
-                m_animation_frames  = 4;
-                m_animation_index   = 0;
+                // m_animation_frames  = 4;
+                // m_animation_index   = 0;
                 break;
 
             case HIT:
                 m_movement.x        = 0.0f;
                 m_movement.y        = 0.0f;
                 m_animation_indices = m_animations[HIT];
-                m_animation_frames  = 2;
-                m_animation_index   = 0;
+                // m_animation_frames  = 2;
+                // m_animation_index   = 0;
                 break;
 
             case DIE:
                 m_movement.x        = 0.0f;
                 m_movement.y        = 0.0f;
                 m_animation_indices = m_animations[DIE];
-                m_animation_frames  = 14;
-                m_animation_index   = 0;
+                // m_animation_frames  = 14;
+                // m_animation_index   = 0;
                 break;
 
             case WALK_LEFT:
                 m_movement.x        = -1.0f;
                 m_flip              = 1;
                 m_animation_indices = m_animations[WALK];
-                m_animation_frames  = 8;
-                m_animation_index   = 0;
+                // m_animation_frames  = 8;
+                // m_animation_index   = 0;
                 break;
 
             case WALK_RIGHT:
                 m_movement.x        = 1.0f;
                 m_flip              = 0;
                 m_animation_indices = m_animations[WALK];
-                m_animation_frames  = 8;
-                m_animation_index   = 0;
+                // m_animation_frames  = 8;
+                // m_animation_index   = 0;
                 break;
 
             case WALK_UP:
                 m_movement.y        = 1.0f;
                 m_animation_indices = m_animations[WALK];
-                m_animation_frames  = 8;
-                m_animation_index   = 0;
+                // m_animation_frames  = 8;
+                // m_animation_index   = 0;
                 break;
 
             case WALK_DOWN:
                 m_movement.y        = -1.0f;
                 m_animation_indices = m_animations[WALK];
-                m_animation_frames  = 8;
-                m_animation_index   = 0;
+                // m_animation_frames  = 8;
+                // m_animation_index   = 0;
                 break;
 
             case IDLE:
             default:
-                if (m_curr_state != IDLE) {  // only reset animation if not already idle
-                    m_animation_index = 0;
-                }
+                // if (m_curr_state != IDLE) {  // only reset animation if not already idle
+                //     m_animation_index = 0;
+                // }
                 m_movement.x        = 0.0f;
                 m_movement.y        = 0.0f;
                 m_animation_indices = m_animations[IDLE];
-                m_animation_frames  = 8;
+                // m_animation_frames  = 8;
                 break;
         }
+        if (m_curr_state != IDLE) {  // only reset animation if not already idle
+            m_animation_index = 0;
+        }
+        if (m_curr_state != new_state) {
+            if (new_state == WALK_DOWN || new_state == WALK_UP || new_state == WALK_LEFT || new_state == WALK_LEFT) {
+                m_animation_frames = m_animation_length[WALK];
+            } else {
+                m_animation_frames = m_animation_length[new_state];
+            }
+        }
+
         m_curr_state = new_state;
     }
     // if (m_entity_type == PLAYER) {
@@ -432,9 +482,10 @@ void Entity::update(float delta_time, Entity* player, std::vector<Entity*> objec
     if (m_animation_indices != NULL) {
         m_animation_time += delta_time;
         if (m_entity_type == PLAYER) {
-            // std::cout << "Animation index: " << m_animation_index << std::endl;
-            // std::cout << "Animation time: " << m_animation_time << std::endl;
-            // std::cout << "Animation indices: " << std::boolalpha << (m_animation_indices != NULL) << std::endl;
+            std::cout << "Animation length" << 
+            std::cout << "Animation index: " << m_animation_index << std::endl;
+            std::cout << "Animation time: " << m_animation_time << std::endl;
+            std::cout << "Animation indices: " << std::boolalpha << (m_animation_indices != NULL) << std::endl;
         }
         float frames_per_second = 1.0f / SECONDS_PER_FRAME;
 
@@ -444,6 +495,7 @@ void Entity::update(float delta_time, Entity* player, std::vector<Entity*> objec
             m_animation_index++;
 
             if (m_animation_index >= m_animation_frames) {
+            // if (m_animation_index >=  sizeof(m_animation_indices)/sizeof(m_animation_indices[0])) {
                 m_animation_index = 0;
                 if (m_entity_type == PLAYER && (m_curr_state == ATTACK_1 || m_curr_state == ATTACK_2 || m_curr_state == HIT)) {
                     set_curr_state(IDLE);
@@ -454,24 +506,28 @@ void Entity::update(float delta_time, Entity* player, std::vector<Entity*> objec
 
     m_velocity.x = m_movement.x * m_speed;
     m_velocity.y = m_movement.y * m_speed;
-    std::cout << m_entity_type  << " velocity x: " << m_velocity.x << ", " << m_velocity.y << std::endl;
+    // std::cout << m_entity_type  << " velocity x: " << m_velocity.x << ", " << m_velocity.y << std::endl;
 
     // We make two calls to our check_collision methods, one for the collidable objects and one for
     // the map.
     m_position.y += m_velocity.y * delta_time;
     // clamp y position to map
-    std::cout << m_entity_type << " Player position x: " << m_position.x << std::endl;
+    // std::cout << m_entity_type << " Player position x: " << m_position.x << std::endl;
     m_position.y = glm::clamp(m_position.y, -map->get_height() + m_height / 2.0f, 0.0f - m_height / 2.0f + 1.0f);
 
     // std::cout << "collision before bottom: " << std::boolalpha << m_collided_bottom << std::endl;
     check_collision_y(map);
     m_collided_top = false;
+    m_collided_bottom = false;
     check_collision_y(objects, object_count);
     // std::cout << "collision after bottom: " << std::boolalpha << m_collided_bottom << std::endl;
     // if player collides with enemy, change hit status and invulnerability time
     if (m_entity_type == PLAYER && (m_collided_top || m_collided_bottom) && m_invulnerability_time <= 0.0f) {
         m_hit                  = true;
         m_invulnerability_time = INVULNERABILITY_TIME;  // reset invulnerability time
+    }
+    if (m_entity_type == ENEMY && (m_collided_top || m_collided_bottom)) {
+        m_position.y -= m_velocity.y * delta_time;
     }
 
     m_position.x += m_velocity.x * delta_time;
@@ -488,6 +544,9 @@ void Entity::update(float delta_time, Entity* player, std::vector<Entity*> objec
     if (m_entity_type == PLAYER && (m_collided_left || m_collided_right) && m_invulnerability_time <= 0.0f) {
         m_hit                  = true;
         m_invulnerability_time = INVULNERABILITY_TIME;  // reset invulnerability time
+    }
+    if (m_entity_type == ENEMY && (m_collided_left || m_collided_right)) {
+        m_position.x -= m_velocity.x * delta_time;
     }
 
     // set hit animation
@@ -526,25 +585,27 @@ void const Entity::check_collision_y(std::vector<Entity*> collidable_entities, i
 
         if (check_collision(collidable_entity)) {
             if (m_entity_type == PLAYER) {
-                std::cout << "velocity" << m_velocity.x << ", " << m_velocity.y << std::endl;
+                // std::cout << "velocity" << m_velocity.x << ", " << m_velocity.y << std::endl;
             }
             float y_distance                   = fabs(m_position.y - collidable_entity->get_position().y);
             float y_overlap                    = fabs(y_distance - (m_height / 2.0f) - (collidable_entity->get_height() / 2.0f));
             float y_collidable_entity_velocity = collidable_entity->get_velocity().y;
             if (m_velocity.y < 0 || y_collidable_entity_velocity > 0) {
-                // m_position.y += y_overlap;
-                std::cout << "m_velocity.y: " << m_velocity.y << std::endl;
-                std::cout << "y_collidable_entity_velocity: " << y_collidable_entity_velocity << std::endl;
+                // if (m_entity_type != PLAYER)
+                //     m_position.y += y_overlap;
+                // std::cout << "m_velocity.y: " << m_velocity.y << std::endl;
+                // std::cout << "y_collidable_entity_velocity: " << y_collidable_entity_velocity << std::endl;
                 m_velocity.y      = 0;
                 m_collided_bottom = true;
-                std::cout << "collided_bottom with enemy" << std::endl;
+                // std::cout << "collided_bottom with enemy" << std::endl;
                 // collidable_entity->m_is_active = false;  // turn off enemy
                 // collidable_entity->set_is_alive(false);  // turn off enemy
             } else if (m_velocity.y > 0 || y_collidable_entity_velocity < 0) {
-                // m_position.y -= y_overlap;
+                // if (m_entity_type != PLAYER)
+                //     m_position.y -= y_overlap;
                 m_velocity.y   = 0;
                 m_collided_top = true;
-                std::cout << "collided_top with enemy" << std::endl;
+                // std::cout << "collided_top with enemy" << std::endl;
                 m_is_alive = false;  // lose game
             }
         }
@@ -560,16 +621,18 @@ void const Entity::check_collision_x(std::vector<Entity*> collidable_entities, i
             float x_overlap                    = fabs(x_distance - (m_width / 2.0f) - (collidable_entity->get_width() / 2.0f));
             float x_collidable_entity_velocity = collidable_entity->get_velocity().x;
             if (m_velocity.x > 0 || x_collidable_entity_velocity < 0) {
-                // m_position.x -= x_overlap;
+                // if (m_entity_type != PLAYER)
+                //     m_position.x -= x_overlap;
                 m_velocity.x     = 0;
                 m_collided_right = true;
-                std::cout << "collided_right with enemy" << std::endl;
+                // std::cout << "collided_right with enemy" << std::endl;
                 // if (m_invulnerability_time) = false;  // lose game
             } else if (m_velocity.x < 0 || x_collidable_entity_velocity > 0) {
-                // m_position.x += x_overlap;
+                // if (m_entity_type != PLAYER)
+                //     m_position.x += x_overlap;
                 m_velocity.x    = 0;
                 m_collided_left = true;
-                std::cout << "collided_left with enemy" << std::endl;
+                // std::cout << "collided_left with enemy" << std::endl;
                 // m_is_alive = false;  // lose game
             }
         }

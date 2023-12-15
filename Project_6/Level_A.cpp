@@ -4,8 +4,6 @@
 
 #define LEVEL_WIDTH 32
 #define LEVEL_HEIGHT 64
-// #define LEVEL_WIDTH 38
-// #define LEVEL_HEIGHT 38
 
 std::pair<int, int> LEVEL_A_DATA[] = {
 {15, 0}, {15, 0}, {15, 0}, {15, 0}, {15, 0}, {29, 0}, {15, 0}, {15, 0}, {33, 0}, {29, 0}, {16, 0}, {15, 0}, {15, 0}, {15, 0}, {15, 0}, {16, 0}, {15, 0}, {15, 0}, {15, 0}, {15, 0}, {16, 0}, {15, 0}, {15, 0}, {15, 0}, {15, 0}, {29, 0}, {16, 0}, {15, 0}, {15, 0}, {15, 0}, {15, 0}, {15, 0},
@@ -74,6 +72,24 @@ std::pair<int, int> LEVEL_A_DATA[] = {
 {15, 0}, {19, 0}, {15, 0}, {29, 0}, {15, 0}, {15, 0}, {15, 0}, {15, 0}, {15, 0}, {15, 0}, {15, 0}, {15, 0}, {15, 0}, {30, 0}, {15, 0}, {15, 0}, {16, 0}, {15, 0}, {19, 0}, {15, 0}, {15, 0}, {15, 0}, {15, 0}, {15, 0}, {15, 0}, {15, 0}, {19, 0}, {19, 0}, {15, 0}, {15, 0}, {33, 0}, {33, 0},
 };
 
+// struct EnemyTextures {
+//     // ————— GAME OBJECTS ————— //
+//     Map                  *map;
+//     Entity               *player;
+//     std::vector<Entity *> enemies;
+//     Entity               *collectables;
+//     GLuint                fontsheet_texture_id;
+//     std::vector<GLuint>   textures;
+//     // Entity *enemies;
+
+//     // ————— AUDIO ————— //
+//     Mix_Music *bgm;
+//     Mix_Chunk *jump_sfx;
+
+//     // ————— POINTERS TO OTHER SCENES ————— //
+//     int next_scene_id;
+// };
+
 LevelA::~LevelA() {
     // delete[] m_state.enemies;
     delete m_state.player;
@@ -85,9 +101,7 @@ LevelA::~LevelA() {
 void LevelA::initialize(Entity* player, GLuint g_fontsheet_texture_id, float view_x, float view_y) {
     std::cout << "Level A initialize: start" << std::endl;
     GLuint map_texture_id = Utility::load_texture("assets/images/PixelFarm_Tileset.png");
-    // GLuint map_texture_id = Utility::load_texture("assets/images/Cavernas_by_Adam_Saltsman.png");
     m_state.map           = new Map(LEVEL_WIDTH, LEVEL_HEIGHT, LEVEL_A_DATA, map_texture_id, 1.0f, 14, 11);
-    // m_state.map           = new Map(LEVEL_WIDTH, LEVEL_HEIGHT, LEVEL_A_DATA, map_texture_id, 1.0f, 12, 32);
 
     m_state.player = player;
 
@@ -96,12 +110,30 @@ void LevelA::initialize(Entity* player, GLuint g_fontsheet_texture_id, float vie
     // m_state.enemies[0].set_position(glm::vec3(21.0f, -20.0f, 0.0f));
     m_state.enemies = std::vector<Entity*>(ENEMY_COUNT);
     // m_state.enemies = std::vector<Entity*>;
+
+    m_state.textures.push_back(Utility::load_texture("assets/images/enemy/ducky_3_spritesheet.png"));
+    m_state.textures.push_back(Utility::load_texture("assets/images/enemy/chicken-walk.png"));
+    m_state.textures.push_back(Utility::load_texture("assets/images/enemy/piggy_sheet.png"));
+
     for (int i = 0; i < ENEMY_COUNT; ++i) {
         // randomly add enemies around the player
         Entity* new_enemy = new Entity();
         // char* name = "ducky_3_spritesheet.png";
         // new_enemy->initialize(ENEMY, name, player, view_x, view_y);
-        new_enemy->initialize(ENEMY, "assets/images/enemy/ducky_3_spritesheet.png", player, view_x, view_y);
+        int new_enemy_texture = Utility::rand_int_range(0, m_state.textures.size() - 1);
+        switch (new_enemy_texture) {
+            case 0:
+                new_enemy->initialize(ENEMY, "assets/images/enemy/ducky_3_spritesheet.png", player, view_x, view_y);
+                break;
+            case 1:
+                new_enemy->initialize(ENEMY, "assets/images/enemy/chicken-walk.png", player, view_x, view_y);
+                break;
+            case 2:
+                new_enemy->initialize(ENEMY, "assets/images/enemy/piggy_sheet.png", player, view_x, view_y);
+                break;
+        }
+        // new_enemy->initialize(ENEMY, "assets/images/enemy/ducky_3_spritesheet.png", player, view_x, view_y);
+        new_enemy->m_texture_id = m_state.textures[new_enemy_texture];
         m_state.enemies[i] = new_enemy;
     }
 
@@ -115,24 +147,37 @@ void LevelA::initialize(Entity* player, GLuint g_fontsheet_texture_id, float vie
     // Mix_VolumeMusic(MIX_MAX_VOLUME / 2);
 
     // m_state.jump_sfx = Mix_LoadWAV("assets/audio/jumpland.wav");
+    m_view_x = view_x;
+    m_view_y = view_y;
+
     std::cout << "Level A initialize: done" << std::endl;
 }
 
 void LevelA::update(float delta_time) {
+    // m_state.player->update(delta_time, m_state.player, m_state.enemies, 0, NULL, 0, m_state.map);
     m_state.player->update(delta_time, m_state.player, m_state.enemies, ENEMY_COUNT, NULL, 0, m_state.map);
 
     // add more enemies randomly around the player
 
     // for (int i = 0; i < ENEMY_COUNT; i++) {
     for (int i = 0; i < m_state.enemies.size(); i++) {
-        m_state.enemies[i]->update(delta_time, m_state.player, {}, 0, NULL, 0, m_state.map);
+        // m_state.enemies[i]->update(delta_time, m_state.player, m_state.enemies, 0, NULL, 0, m_state.map);
+        if (!m_state.enemies[i]->get_is_active()) {
+            // m_state.enemies[i]->initialize(ENEMY, "assets/images/enemy/ducky_3_spritesheet.png", m_state.player, m_view_x, m_view_y);
+            m_state.enemies[i]->spawn(m_state.player, m_view_x, m_view_y);
+        }
+        // m_state.enemies[i]->update(delta_time, m_state.player, m_state.enemies, 0, NULL, 0, m_state.map);
+        m_state.enemies[i]->update(delta_time, m_state.player, m_state.enemies, ENEMY_COUNT, NULL, 0, m_state.map);
     }
+    std::cout << "Level A update: done" << std::endl;
 }
 
 void LevelA::render(ShaderProgram* program) {
     m_state.map->render(program);
     m_state.player->render(program);
     for (int i = 0; i < ENEMY_COUNT; i++) {
+    // for (int i = 0; i < 10; i++) {
         m_state.enemies[i]->render(program);
     }
+    std::cout << "Level A render: done" << std::endl;
 }

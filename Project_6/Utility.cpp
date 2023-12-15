@@ -15,6 +15,11 @@ float Utility::rand_float_range(float a, float b) {
     return ((b - a) * ((float)rand() / RAND_MAX)) + a;
 }
 
+int Utility::rand_int_range(int min, int max) {
+    int range = max - min + 1;
+    return rand() % range + min;
+}
+
 GLuint Utility::load_texture(const char* filepath) {
     int            width, height, number_of_components;
     unsigned char* image = stbi_load(filepath, &width, &height, &number_of_components, STBI_rgb_alpha);

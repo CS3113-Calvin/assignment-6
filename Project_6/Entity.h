@@ -80,10 +80,6 @@ class Entity {
                      WALK_UP    = 10,
                      WALK_DOWN  = 11;
 
-    // Player levels
-    float experience = 0.0f;
-    int   level      = 1;
-
     // ----- SOUND EFFECTS ----- //
     Mix_Chunk** m_sfx = new Mix_Chunk* [8] {
         NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
@@ -102,7 +98,9 @@ class Entity {
     };
 
     // How many frames for each animation
-    // int* m_animation_frames[8];
+    int m_animation_length[8] = {
+        0, 0, 0, 0, 0, 0, 0, 0
+    };
 
     int m_animation_frames = 0,
         m_animation_index  = 0,
@@ -129,6 +127,12 @@ class Entity {
     // health stuff
     bool  m_hit                  = false;  // Has the player been hit by an enemy?
     float m_invulnerability_time = 0.0f;   // How long until the player can be hit again?
+    float m_health = 0.0f;
+    float m_damage = 1.0f;
+
+    // Player levels
+    float m_experience = 0.0f;
+    int   m_level      = 1;
 
     // flag
     bool m_got_flag = false;
@@ -136,6 +140,7 @@ class Entity {
     // ————— METHODS ————— //
     Entity();
     Entity(EntityType entity_type);
+    void spawn(Entity* player, float view_x, float view_y);
     void initialize(EntityType entity_type, const char* name, Entity* player, float view_x, float view_y);
     ~Entity();
 
@@ -176,6 +181,7 @@ class Entity {
     bool const       get_is_alive() const { return m_is_alive; };
     int const        get_curr_state() const { return m_curr_state; };
     char* const      get_name() const { return m_name; };
+    bool const       get_is_active() const { return m_is_active; }
 
     // ————— SETTERS ————— //
     void const set_entity_type(EntityType new_entity_type) { m_entity_type = new_entity_type; };
