@@ -1,15 +1,16 @@
 #define GL_SILENCE_DEPRECATION
 #define GL_GLEXT_PROTOTYPES 1
 #define FIXED_TIMESTEP 0.0166666f
-#define LEVEL1_LEFT_EDGE 0.0f
-#define LEVEL2_BOTTOM_EDGE -37.0f
-#define LEVEL3_TOP_EDGE 1.0f
+#define LEVEL1_TOP_EDGE -1.0f
+#define LEVEL2_BOTTOM_EDGE -31.0f
 #define VIEW_SCALE 0.7f  // scale camera view
 #define VIEW_WIDTH 16.0f
 #define VIEW_OFFSET 1.0f
 #define VIEW_HEIGHT 9.0f
-#define MAP_WIDTH 32.0f
-#define MAP_HEIGHT 64.0f
+// #define MAP_WIDTH 32.0f
+// #define MAP_HEIGHT 64.0f
+#define MAP_WIDTH g_current_scene->m_state.map->get_width()
+#define MAP_HEIGHT g_current_scene->m_state.map->get_height()
 
 #ifdef _WINDOWS
 #include <GL/glew.h>
@@ -180,7 +181,7 @@ void initialize() {
     // Audio
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
 
-    Mix_Music* bgm = Mix_LoadMUS("assets/audio/Malicious.mp3");
+    Mix_Music* bgm = Mix_LoadMUS("assets/audio/Morning.mp3");
     Mix_PlayMusic(bgm, -1);
     Mix_VolumeMusic(MIX_MAX_VOLUME / 6);
 
@@ -208,6 +209,7 @@ void process_input() {
             g_current_scene->m_state.player->set_curr_state(g_current_scene->m_state.player->WALK_RIGHT);
             g_current_scene->m_state.player->set_movement(glm::vec3(1.0f, 0.0f, 0.0f));
         }
+
         // Vertical movement
         if (key_state[SDL_SCANCODE_UP] || key_state[SDL_SCANCODE_W]) {
             glm::vec3 current_movement = g_current_scene->m_state.player->get_movement();
@@ -251,21 +253,18 @@ void process_input() {
                     case SDLK_SPACE:
                         // case SDLK_UP:
                         // ————— JUMPING ————— //
-                        if (g_current_scene != g_level_menu && g_game_status == RUNNING) {
-                            if (g_current_scene->m_state.player->m_collided_bottom) {
-                                g_current_scene->m_state.player->m_is_jumping = true;
-                                Mix_PlayChannel(-1, g_current_scene->m_state.jump_sfx, 0);
-                            }
-                        }
+                        // if (g_current_scene != g_level_menu && g_game_status == RUNNING) {
+                        //     if (g_current_scene->m_state.player->m_collided_bottom) {
+                        //         g_current_scene->m_state.player->m_is_jumping = true;
+                        //     }
+                        // }
                         break;
 
                     case SDLK_e:
                         // attack
                         if (g_current_scene != g_level_menu && g_game_status == RUNNING) {
-                            // g_current_scene->m_state.player->attack_1();
-                            // std::cout << "\n\n\n\nAttacking\n\n\n\n"
-                            //           << std::endl;
                             g_current_scene->m_state.player->set_curr_state(g_current_scene->m_state.player->ATTACK_1);
+                            Mix_PlayChannel(-1, g_current_scene->m_state.jump_sfx, 0);
                         }
                         break;
 
@@ -327,14 +326,19 @@ void update() {
 
     // Update scene if player crosses bounds
     if (g_current_scene == g_level_a) {
-        // left edge
-        if (g_current_scene->m_state.player->get_position().x < LEVEL1_LEFT_EDGE + g_current_scene->m_state.player->get_width() / 2.0f) {
+        // top edge
+        if (g_current_scene->m_state.player->get_position().y > LEVEL1_TOP_EDGE - g_current_scene->m_state.player->get_height() / 2.0f) {
             switch_to_scene(g_level_b);
         }
     } else if (g_current_scene == g_level_b) {
-        // bottom edge
         if (g_current_scene->m_state.player->get_position().y < LEVEL2_BOTTOM_EDGE + g_current_scene->m_state.player->get_height() / 2.0f) {
-            switch_to_scene(g_level_c);
+            if (g_current_scene->m_state.player->get_position().x >= g_current_scene->m_state.map->get_width() / 2) {
+                // bottom right edge
+                switch_to_scene(g_level_c);
+            } else {
+                // bottom left edge
+                switch_to_scene(g_level_a);
+            }
         }
     } else if (g_current_scene == g_level_c) {
         // top edge
@@ -369,8 +373,6 @@ void render() {
         return;
     }
 
-    // float x_clamp = glm::clamp(g_current_scene->m_state.player->get_position().x, 0 + (VIEW_WIDTH * VIEW_SCALE), MAP_WIDTH - (VIEW_WIDTH * VIEW_SCALE));
-    // float y_clamp = glm::clamp(g_current_scene->m_state.player->get_position().y, -MAP_HEIGHT + (VIEW_HEIGHT * VIEW_SCALE), 0 - (VIEW_HEIGHT * VIEW_SCALE));
     float x_clamp = glm::clamp(g_current_scene->m_state.player->get_position().x, 0 + (VIEW_WIDTH * VIEW_SCALE), MAP_WIDTH - (VIEW_WIDTH * VIEW_SCALE) - (VIEW_OFFSET * VIEW_SCALE));
     float y_clamp = glm::clamp(g_current_scene->m_state.player->get_position().y, -MAP_HEIGHT + (VIEW_HEIGHT * VIEW_SCALE) + (VIEW_OFFSET * VIEW_SCALE), 0 - (VIEW_HEIGHT * VIEW_SCALE));
     if (g_current_scene != g_level_menu) {

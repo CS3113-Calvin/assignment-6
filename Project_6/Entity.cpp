@@ -141,13 +141,10 @@ void Entity::initialize(EntityType entity_type, const char* name, Entity* player
             if (name == "assets/images/enemy/ducky_3_spritesheet.png") {
                 m_animations[WALK]     = new int[8]{6, 7, 8, 9, 10, 11};
                 m_animations[IDLE]     = new int[2]{0, 1};
-                // m_animation_frames[WALK] = 8;
-
                 m_animation_cols        = 6;
                 m_animation_rows        = 4;
                 m_animation_length[WALK] = 8;
                 m_animation_length[IDLE] = 2;
-                // set initial animation
             } else if (name == "assets/images/enemy/chicken-walk.png") {
                 m_animations[WALK]     = new int[4]{0, 1, 2, 3};
                 m_animations[IDLE]     = new int[1]{0};
@@ -168,9 +165,6 @@ void Entity::initialize(EntityType entity_type, const char* name, Entity* player
             }
             set_curr_state(WALK_LEFT);
             m_animation_indices = m_animations[WALK];
-    // m_state.textures.push_back(Utility::load_texture());
-    // m_state.textures.push_back(Utility::load_texture());
-    // m_state.textures.push_back(Utility::load_texture("piggy_sheet.png"));
     }
 }
 
@@ -317,87 +311,64 @@ void const Entity::set_curr_state(int new_state) {
                 m_movement.x        = 0.0f;
                 m_movement.y        = 0.0f;
                 m_animation_indices = m_animations[ATTACK_1];
-                // m_animation_frames  = 4;
-                // m_animation_index   = 0;
                 break;
 
             case ATTACK_2:
                 m_movement.x        = 0.0f;
                 m_movement.y        = 0.0f;
                 m_animation_indices = m_animations[ATTACK_2];
-                // m_animation_frames  = 3;
-                // m_animation_index   = 0;
                 break;
 
             case JUMP:
                 m_movement.y        = 1.0f;
                 m_animation_indices = m_animations[JUMP];
-                // m_animation_frames  = 4;
-                // m_animation_index   = 0;
                 break;
 
             case FALL:
                 m_movement.y        = -1.0f;
                 m_animation_indices = m_animations[FALL];
-                // m_animation_frames  = 4;
-                // m_animation_index   = 0;
                 break;
 
             case HIT:
                 m_movement.x        = 0.0f;
                 m_movement.y        = 0.0f;
                 m_animation_indices = m_animations[HIT];
-                // m_animation_frames  = 2;
-                // m_animation_index   = 0;
                 break;
 
             case DIE:
                 m_movement.x        = 0.0f;
                 m_movement.y        = 0.0f;
                 m_animation_indices = m_animations[DIE];
-                // m_animation_frames  = 14;
-                // m_animation_index   = 0;
                 break;
 
             case WALK_LEFT:
                 m_movement.x        = -1.0f;
                 m_flip              = 1;
                 m_animation_indices = m_animations[WALK];
-                // m_animation_frames  = 8;
-                // m_animation_index   = 0;
                 break;
 
             case WALK_RIGHT:
                 m_movement.x        = 1.0f;
                 m_flip              = 0;
                 m_animation_indices = m_animations[WALK];
-                // m_animation_frames  = 8;
-                // m_animation_index   = 0;
+                m_animation_frames  = 8;
                 break;
 
             case WALK_UP:
                 m_movement.y        = 1.0f;
                 m_animation_indices = m_animations[WALK];
-                // m_animation_frames  = 8;
-                // m_animation_index   = 0;
                 break;
 
             case WALK_DOWN:
                 m_movement.y        = -1.0f;
                 m_animation_indices = m_animations[WALK];
-                // m_animation_frames  = 8;
-                // m_animation_index   = 0;
                 break;
 
             case IDLE:
             default:
-                // if (m_curr_state != IDLE) {  // only reset animation if not already idle
-                //     m_animation_index = 0;
-                // }
                 m_movement.x        = 0.0f;
                 m_movement.y        = 0.0f;
                 m_animation_indices = m_animations[IDLE];
-                // m_animation_frames  = 8;
                 break;
         }
         if (m_curr_state != IDLE) {  // only reset animation if not already idle
@@ -413,9 +384,6 @@ void const Entity::set_curr_state(int new_state) {
 
         m_curr_state = new_state;
     }
-    // if (m_entity_type == PLAYER) {
-
-    // }
 };
 
 void Entity::update(float delta_time, Entity* player, std::vector<Entity*> objects, int object_count, Entity* collectables, int collectable_count, Map* map) {
@@ -446,33 +414,7 @@ void Entity::update(float delta_time, Entity* player, std::vector<Entity*> objec
             set_curr_state(IDLE);
         }
 
-        // If player is on ladder, allow them to move up and down
-        if (map->get_is_on_ladder(m_position)) {
-            // print movement
-            std::cout << "ladder movement: " << m_movement.x << ", " << m_movement.y << std::endl;
-            if (m_movement.y > 0) {
-                m_velocity.y = m_movement.y * m_speed;
-            } else if (m_movement.y < 0) {
-                m_velocity.y = m_movement.y * m_speed;
-            } else {
-                m_velocity.y = 0;
-            }
-        } else if (map->get_is_in_water(m_position)) {
-            // print movement
-            std::cout << "water movement: " << m_movement.x << ", " << m_movement.y << std::endl;
-            if (m_movement.y > 0) {
-                m_velocity.y = m_movement.y * m_speed * 0.5f;
-            } else if (m_movement.y < 0) {
-                m_velocity.y = m_movement.y * m_speed * 0.5f;
-            } else {
-                if (!m_is_jumping) {  // drag player down when not jumping
-                    m_velocity += m_acceleration * 0.1f * delta_time;
-                }
-            }
-        } else {
-            // m_velocity.y = 0;
-            m_velocity += m_acceleration * delta_time;
-        }
+        m_velocity += m_acceleration * delta_time;
     }
 
     if (m_entity_type == ENEMY) {
@@ -481,16 +423,15 @@ void Entity::update(float delta_time, Entity* player, std::vector<Entity*> objec
 
     if (m_animation_indices != NULL) {
         m_animation_time += delta_time;
-        if (m_entity_type == PLAYER) {
-            std::cout << "Animation length" << 
-            std::cout << "Animation index: " << m_animation_index << std::endl;
-            std::cout << "Animation time: " << m_animation_time << std::endl;
-            std::cout << "Animation indices: " << std::boolalpha << (m_animation_indices != NULL) << std::endl;
-        }
         float frames_per_second = 1.0f / SECONDS_PER_FRAME;
 
         if (m_animation_time * 1.0f >= frames_per_second) {
-        // if (m_animation_time * 2.3f >= frames_per_second) {
+            // if (m_entity_type == PLAYER) {
+            //     std::cout << "Animation frames: " << m_animation_frames << std::endl;
+            //     std::cout << "Animation index: " << m_animation_index << std::endl;
+            //     std::cout << "Animation time: " << m_animation_time << std::endl;
+            //     std::cout << "Animation indices: " << std::boolalpha << (m_animation_indices != NULL) << std::endl;
+            // }
             m_animation_time = 0.0f;
             m_animation_index++;
 

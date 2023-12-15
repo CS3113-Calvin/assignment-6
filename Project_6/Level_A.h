@@ -7,11 +7,8 @@ class LevelA : public Scene {
     float m_view_x;
     float m_view_y;
 
-    // GLuint* textures;
-
     // ————— STATIC ATTRIBUTES ————— //
-    // int ENEMY_COUNT = 20;
-    int ENEMY_COUNT = 30;
+    int ENEMY_COUNT = 10;
 
     // ————— CONSTRUCTOR ————— //
     ~LevelA();

@@ -2,8 +2,11 @@
 
 class LevelC : public Scene {
    public:
+    float m_view_x;
+    float m_view_y;
+
     // ————— STATIC ATTRIBUTES ————— //
-    int ENEMY_COUNT = 1;
+    int ENEMY_COUNT = 30;
 
     // ————— CONSTRUCTOR ————— //
     ~LevelC();
