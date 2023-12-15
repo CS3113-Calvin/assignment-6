@@ -25,7 +25,7 @@ void LevelMenu::render(ShaderProgram *program) {
     std::cout << "LevelMenu::render()" << std::endl;
     // Can keep background as just a color
     // Draw "The Caverns Below" text
-    Utility::draw_text(program, m_fontsheet_texture_id, "The Caverns Below", 0.5f, -0.25f, glm::vec3(-2.5f, 0.0f, 0.0f));
+    Utility::draw_text(program, m_fontsheet_texture_id, "Farmland Fiends", 0.5f, -0.25f, glm::vec3(-2.5f, 0.0f, 0.0f));
     // Draw "Press Enter to Start" text
     Utility::draw_text(program, m_fontsheet_texture_id, "Press Enter to Start", 0.25f, -0.125f, glm::vec3(-1.7f, -0.7f, 0.0f));
 }
