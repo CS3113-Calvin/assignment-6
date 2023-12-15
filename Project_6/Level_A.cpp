@@ -93,8 +93,8 @@ void LevelA::initialize(Entity* player, GLuint g_fontsheet_texture_id, float vie
     m_state.enemies = std::vector<Entity*>(ENEMY_COUNT);
     // m_state.enemies = std::vector<Entity*>;
 
-    m_state.textures.push_back(Utility::load_texture("assets/images/enemy/ducky_3_spritesheet.png"));
-    m_state.textures.push_back(Utility::load_texture("assets/images/enemy/chicken-walk.png"));
+    // m_state.textures.push_back(Utility::load_texture("assets/images/enemy/ducky_3_spritesheet.png"));
+    // m_state.textures.push_back(Utility::load_texture("assets/images/enemy/chicken-walk.png"));
     m_state.textures.push_back(Utility::load_texture("assets/images/enemy/piggy_sheet.png"));
 
     for (int i = 0; i < ENEMY_COUNT; ++i) {
@@ -105,12 +105,6 @@ void LevelA::initialize(Entity* player, GLuint g_fontsheet_texture_id, float vie
         int new_enemy_texture = Utility::rand_int_range(0, m_state.textures.size() - 1);
         switch (new_enemy_texture) {
             case 0:
-                new_enemy->initialize(ENEMY, "assets/images/enemy/ducky_3_spritesheet.png", player, view_x, view_y);
-                break;
-            case 1:
-                new_enemy->initialize(ENEMY, "assets/images/enemy/chicken-walk.png", player, view_x, view_y);
-                break;
-            case 2:
                 new_enemy->initialize(ENEMY, "assets/images/enemy/piggy_sheet.png", player, view_x, view_y);
                 break;
         }

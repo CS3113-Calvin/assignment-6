@@ -25,15 +25,15 @@
 #include "glm/mat4x4.hpp"
 
 Entity::Entity() {
-    // // ––––– PHYSICS ––––– //
-    // m_position     = glm::vec3(0.0f);
-    // m_velocity     = glm::vec3(0.0f);
-    // m_acceleration = glm::vec3(0.0f);
+    // ––––– PHYSICS ––––– //
+    m_position     = glm::vec3(0.0f);
+    m_velocity     = glm::vec3(0.0f);
+    m_acceleration = glm::vec3(0.0f);
 
-    // // ––––– TRANSLATION ––––– //
-    // m_movement     = glm::vec3(0.0f);
-    // m_speed        = 0;
-    // m_model_matrix = glm::mat4(1.0f);
+    // ––––– TRANSLATION ––––– //
+    m_movement     = glm::vec3(0.0f);
+    m_speed        = 0;
+    m_model_matrix = glm::mat4(1.0f);
 
     // // m_entity_type = ENEMY;
     // // m_ai_type     = WALKER;
@@ -351,7 +351,6 @@ void const Entity::set_curr_state(int new_state) {
                 m_movement.x        = 1.0f;
                 m_flip              = 0;
                 m_animation_indices = m_animations[WALK];
-                m_animation_frames  = 8;
                 break;
 
             case WALK_UP:
@@ -371,12 +370,13 @@ void const Entity::set_curr_state(int new_state) {
                 m_animation_indices = m_animations[IDLE];
                 break;
         }
-        if (m_curr_state != IDLE) {  // only reset animation if not already idle
+        if (m_curr_state != IDLE || new_state == ATTACK_1) {  // only reset animation if not already idle
             m_animation_index = 0;
         }
         if (m_curr_state != new_state) {
-            if (new_state == WALK_DOWN || new_state == WALK_UP || new_state == WALK_LEFT || new_state == WALK_LEFT) {
+            if (new_state == WALK_DOWN || new_state == WALK_UP || new_state == WALK_LEFT || new_state == WALK_RIGHT) {
                 m_animation_frames = m_animation_length[WALK];
+                // m_animation_frames  = 8;
             } else {
                 m_animation_frames = m_animation_length[new_state];
             }
@@ -403,7 +403,7 @@ void Entity::update(float delta_time, Entity* player, std::vector<Entity*> objec
                 float   x_distance = fabs(m_position.x - object->m_position.x) - ((m_width + object->m_width) / 2.0f);
                 float   y_distance = fabs(m_position.y - object->m_position.y) - ((m_height + object->m_height) / 2.0f);
 
-                if (x_distance < 1.0f && y_distance < 0.25f) {
+                if (x_distance < 1.25f && y_distance < 0.25f) {
                     object->m_is_active = false;
                     object->set_is_alive(false);
                 }
@@ -427,6 +427,7 @@ void Entity::update(float delta_time, Entity* player, std::vector<Entity*> objec
 
         if (m_animation_time * 1.0f >= frames_per_second) {
             // if (m_entity_type == PLAYER) {
+            //     std::cout << "curr state: " << m_curr_state << std::endl;
             //     std::cout << "Animation frames: " << m_animation_frames << std::endl;
             //     std::cout << "Animation index: " << m_animation_index << std::endl;
             //     std::cout << "Animation time: " << m_animation_time << std::endl;
@@ -508,11 +509,10 @@ void Entity::update(float delta_time, Entity* player, std::vector<Entity*> objec
 
     if (m_entity_type == ENEMY) ai_activate(player);
 
-    if (m_is_jumping) {
-        m_is_jumping = false;
-
-        m_velocity.y += m_jumping_power;
-    }
+    // if (m_is_jumping) {
+    //     m_is_jumping = false;
+    //     m_velocity.y += m_jumping_power;
+    // }
 
     m_model_matrix = glm::mat4(1.0f);
     m_model_matrix = glm::translate(m_model_matrix, m_position);
@@ -532,8 +532,8 @@ void const Entity::check_collision_y(std::vector<Entity*> collidable_entities, i
             float y_overlap                    = fabs(y_distance - (m_height / 2.0f) - (collidable_entity->get_height() / 2.0f));
             float y_collidable_entity_velocity = collidable_entity->get_velocity().y;
             if (m_velocity.y < 0 || y_collidable_entity_velocity > 0) {
-                // if (m_entity_type != PLAYER)
-                //     m_position.y += y_overlap;
+                if (m_entity_type != PLAYER)
+                    m_position.y += y_overlap;
                 // std::cout << "m_velocity.y: " << m_velocity.y << std::endl;
                 // std::cout << "y_collidable_entity_velocity: " << y_collidable_entity_velocity << std::endl;
                 m_velocity.y      = 0;
@@ -542,8 +542,8 @@ void const Entity::check_collision_y(std::vector<Entity*> collidable_entities, i
                 // collidable_entity->m_is_active = false;  // turn off enemy
                 // collidable_entity->set_is_alive(false);  // turn off enemy
             } else if (m_velocity.y > 0 || y_collidable_entity_velocity < 0) {
-                // if (m_entity_type != PLAYER)
-                //     m_position.y -= y_overlap;
+                if (m_entity_type != PLAYER)
+                    m_position.y -= y_overlap;
                 m_velocity.y   = 0;
                 m_collided_top = true;
                 // std::cout << "collided_top with enemy" << std::endl;
@@ -562,15 +562,15 @@ void const Entity::check_collision_x(std::vector<Entity*> collidable_entities, i
             float x_overlap                    = fabs(x_distance - (m_width / 2.0f) - (collidable_entity->get_width() / 2.0f));
             float x_collidable_entity_velocity = collidable_entity->get_velocity().x;
             if (m_velocity.x > 0 || x_collidable_entity_velocity < 0) {
-                // if (m_entity_type != PLAYER)
-                //     m_position.x -= x_overlap;
+                if (m_entity_type != PLAYER)
+                    m_position.x -= x_overlap;
                 m_velocity.x     = 0;
                 m_collided_right = true;
                 // std::cout << "collided_right with enemy" << std::endl;
                 // if (m_invulnerability_time) = false;  // lose game
             } else if (m_velocity.x < 0 || x_collidable_entity_velocity > 0) {
-                // if (m_entity_type != PLAYER)
-                //     m_position.x += x_overlap;
+                if (m_entity_type != PLAYER)
+                    m_position.x += x_overlap;
                 m_velocity.x    = 0;
                 m_collided_left = true;
                 // std::cout << "collided_left with enemy" << std::endl;
@@ -649,10 +649,10 @@ void Entity::render(ShaderProgram* program) {
     if (!m_is_active) return;
     program->set_model_matrix(m_model_matrix);
 
-    if (m_entity_type == FLAG) {
-        std::cout << "flag position: " << m_position.x << ", " << m_position.y << std::endl;
-        std::cout << std::boolalpha << "animation indices: " << (m_animation_indices != NULL) << std::endl;
-    }
+    // if (m_entity_type == FLAG) {
+    //     std::cout << "flag position: " << m_position.x << ", " << m_position.y << std::endl;
+    //     std::cout << std::boolalpha << "animation indices: " << (m_animation_indices != NULL) << std::endl;
+    // }
 
     if (m_animation_indices != NULL) {
         draw_sprite_from_texture_atlas(program, m_texture_id, m_animation_indices[m_animation_index]);

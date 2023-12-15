@@ -59,7 +59,7 @@ void LevelB::initialize(Entity* player, GLuint g_fontsheet_texture_id, float vie
 
     m_state.textures.push_back(Utility::load_texture("assets/images/enemy/ducky_3_spritesheet.png"));
     m_state.textures.push_back(Utility::load_texture("assets/images/enemy/chicken-walk.png"));
-    m_state.textures.push_back(Utility::load_texture("assets/images/enemy/piggy_sheet.png"));
+    // m_state.textures.push_back(Utility::load_texture("assets/images/enemy/piggy_sheet.png"));
 
     for (int i = 0; i < ENEMY_COUNT; ++i) {
         // randomly add enemies around the player

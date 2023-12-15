@@ -95,7 +95,7 @@ void LevelC::initialize(Entity* player, GLuint g_fontsheet_texture_id, float vie
     m_state.collectables[0].set_width(1.0f);
     m_state.collectables[0].set_height(1.0f);
     m_state.collectables[0].set_scale(1.0f);
-    // m_state.collectables[0].update(0.0f, m_state.player, NULL, 0, NULL, 0, m_state.map);
+    m_state.collectables[0].update(0.0f, m_state.player, {}, 0, NULL, 0, m_state.map);
 
     /* Enemies' stuff */
     m_state.enemies = std::vector<Entity*>(ENEMY_COUNT);

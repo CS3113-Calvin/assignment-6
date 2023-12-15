@@ -271,7 +271,7 @@ void process_input() {
                     case SDLK_RETURN:
                         // ————— SWITCHING SCENES ————— //
                         if (g_current_scene == g_level_menu && g_game_status == RUNNING) {
-                            switch_to_scene(g_level_a);
+                            switch_to_scene(g_level_c);
                         }
                         break;
                     default:
