@@ -81,6 +81,9 @@ void Entity::spawn(Entity* player, float view_x, float view_y) {
     float rand_y = (rand() % 2) ? Utility::rand_float_range(player_position.y + view_y, player_position.y + view_y + 5.0f) : Utility::rand_float_range(player_position.y-view_y - 5.0f, player_position.y-view_y);
 
     set_position(glm::vec3(rand_x, rand_y, 0.0f));
+    float rand_scale = Utility::rand_float_range(0.5f, 1.3f);
+    set_scale(rand_scale);
+    set_speed(1.0f / rand_scale);
     activate();
 }
 
@@ -106,7 +109,7 @@ void Entity::initialize(EntityType entity_type, const char* name, Entity* player
             // float rand_y = (rand() % 2) ? Utility::rand_float_range(player_position.y + view_y, player_position.y + view_y + 5.0f) : Utility::rand_float_range(player_position.y-view_y - 5.0f, player_position.y-view_y);
             // m_position   = glm::vec3(rand_x, rand_y, 0.0f);
             m_movement     = glm::vec3(0.0f);
-            m_speed        = 0;
+            // m_speed        = 0;
             m_model_matrix = glm::mat4(1.0f);
 
             // ----- MOVEMENT ----- //
@@ -115,10 +118,9 @@ void Entity::initialize(EntityType entity_type, const char* name, Entity* player
             // set_acceleration(glm::vec3(0.0f, -9.81f, 0.0f));
 
             // ----- SCALE ----- //
-            // m_scale                 = 0.7f;
-            m_scale                 = 0.9f;
-            m_width                 = 0.5f;
-            m_height                = 0.5f;
+            m_scale                 = 0.9f;  // default scale
+            m_width                 = 0.5f * (m_scale / 0.9f);
+            m_height                = 0.5f * (m_scale / 0.9f);
 
             // ––––– TEXTURE ––––– //
             // char buf[100];
@@ -145,6 +147,7 @@ void Entity::initialize(EntityType entity_type, const char* name, Entity* player
                 m_animation_rows        = 4;
                 m_animation_length[WALK] = 8;
                 m_animation_length[IDLE] = 2;
+                set_speed(1.3f);
             } else if (name == "assets/images/enemy/chicken-walk.png") {
                 m_animations[WALK]     = new int[4]{0, 1, 2, 3};
                 m_animations[IDLE]     = new int[1]{0};
@@ -152,6 +155,7 @@ void Entity::initialize(EntityType entity_type, const char* name, Entity* player
                 m_animation_rows        = 1;
                 m_animation_length[WALK] = 4;
                 m_animation_length[IDLE] = 1;
+                set_speed(2.0f);
             } else if (name == "assets/images/enemy/piggy_sheet.png") {
                 m_animations[WALK]     = new int[5]{0, 1, 2, 3, 4};
                 m_animations[IDLE]     = new int[4]{5, 6, 7, 8};
@@ -159,6 +163,7 @@ void Entity::initialize(EntityType entity_type, const char* name, Entity* player
                 m_animation_rows        = 2;
                 m_animation_length[WALK] = 5;
                 m_animation_length[IDLE] = 2;
+                set_speed(0.7f);
             } else {
                 std::cout << "unknown name: " << name << std::endl;
                 assert(false);
@@ -370,7 +375,7 @@ void const Entity::set_curr_state(int new_state) {
                 m_animation_indices = m_animations[IDLE];
                 break;
         }
-        if (m_curr_state != IDLE || new_state == ATTACK_1) {  // only reset animation if not already idle
+        if (m_curr_state != IDLE || new_state == ATTACK_1 || new_state == HIT) {  // only reset animation if not already idle
             m_animation_index = 0;
         }
         if (m_curr_state != new_state) {
@@ -385,7 +390,7 @@ void const Entity::set_curr_state(int new_state) {
     }
 };
 
-void Entity::update(float delta_time, Entity* player, std::vector<Entity*> objects, int object_count, Entity* collectables, int collectable_count, Map* map) {
+void Entity::update(float delta_time, Entity* player, std::vector<Entity*> objects, int object_count, Entity* collectables, int collectable_count, Map* map, bool game_status = true) {
     if (!m_is_active) return;
 
     m_collided_top    = false;
@@ -443,6 +448,10 @@ void Entity::update(float delta_time, Entity* player, std::vector<Entity*> objec
                 }
             }
         }
+    }
+
+    if (game_status == false) {
+        return;
     }
 
     m_velocity.x = m_movement.x * m_speed;
@@ -544,7 +553,7 @@ void const Entity::check_collision_y(std::vector<Entity*> collidable_entities, i
                 // std::cout << "collided_bottom with enemy" << std::endl;
                 // collidable_entity->m_is_active = false;  // turn off enemy
                 // collidable_entity->set_is_alive(false);  // turn off enemy
-            } else if (m_velocity.y > 0 || y_collidable_entity_velocity < 0) {
+            } else if (m_velocity.y >= 0 || y_collidable_entity_velocity < 0) {
                 // if (m_entity_type != PLAYER)
                 //     m_position.y -= y_overlap;
                 m_velocity.y   = 0;
@@ -571,7 +580,7 @@ void const Entity::check_collision_x(std::vector<Entity*> collidable_entities, i
                 m_collided_right = true;
                 // std::cout << "collided_right with enemy" << std::endl;
                 // if (m_invulnerability_time) = false;  // lose game
-            } else if (m_velocity.x < 0 || x_collidable_entity_velocity > 0) {
+            } else if (m_velocity.x <= 0 || x_collidable_entity_velocity > 0) {
                 // if (m_entity_type != PLAYER)
                 //     m_position.x += x_overlap;
                 m_velocity.x    = 0;

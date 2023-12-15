@@ -50,7 +50,7 @@ class Scene {
 
     // ————— METHODS ————— //
     virtual void initialize(Entity *player, GLuint g_fontsheet_texture_id, float view_x, float view_y) = 0;
-    virtual void update(float delta_time)                                                              = 0;
+    virtual void update(float delta_time, bool game_status)                                            = 0;
     virtual void render(ShaderProgram *program)                                                        = 0;
 
     // ————— GETTERS ————— //

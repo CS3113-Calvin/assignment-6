@@ -297,7 +297,11 @@ void update() {
     while (delta_time >= FIXED_TIMESTEP) {
     // while (delta_time >= FIXED_TIMESTEP && g_game_status == RUNNING) {
         // ————— UPDATING THE SCENE (i.e. map, character, enemies...) ————— //
-        g_current_scene->update(FIXED_TIMESTEP);
+        bool game_status = true;
+        if (g_game_status != RUNNING) {
+            game_status = false;
+        }
+        g_current_scene->update(FIXED_TIMESTEP, game_status);
 
         if (g_current_scene->m_state.player->m_hit && g_game_status == RUNNING) {
             g_player_lives--;

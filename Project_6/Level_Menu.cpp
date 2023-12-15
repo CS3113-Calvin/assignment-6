@@ -17,7 +17,7 @@ void LevelMenu::initialize(Entity* player, GLuint fontsheet_texture_id, float vi
     std::cout << "LevelMenu::initialize()" << std::endl;
 }
 
-void LevelMenu::update(float delta_time) {
+void LevelMenu::update(float delta_time, bool game_status) {
     std::cout << "LevelMenu::update()" << std::endl;
 }
 

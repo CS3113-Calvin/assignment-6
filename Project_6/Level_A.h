@@ -15,6 +15,6 @@ class LevelA : public Scene {
 
     // ————— METHODS ————— //
     void initialize(Entity* player, GLuint g_fontsheet_texture_id, float view_x, float view_y) override;
-    void update(float delta_time) override;
+    void update(float delta_time, bool game_status) override;
     void render(ShaderProgram* program) override;
 };

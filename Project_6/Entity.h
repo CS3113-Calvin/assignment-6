@@ -145,7 +145,7 @@ class Entity {
     ~Entity();
 
     void draw_sprite_from_texture_atlas(ShaderProgram* program, GLuint texture_id, int index);
-    void update(float delta_time, Entity* player, std::vector<Entity*> objects, int object_count, Entity* collectables, int collectable_count, Map* map);  // Now, update should check for both objects in the game AND the map
+    void update(float delta_time, Entity* player, std::vector<Entity*> objects, int object_count, Entity* collectables, int collectable_count, Map* map, bool game_status);  // Now, update should check for both objects in the game AND the map
     void render(ShaderProgram* program);
 
     bool const check_collision(Entity* other) const;

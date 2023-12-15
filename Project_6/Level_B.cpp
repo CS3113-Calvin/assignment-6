@@ -93,18 +93,18 @@ void LevelB::initialize(Entity* player, GLuint g_fontsheet_texture_id, float vie
     std::cout << "Level B initialize: done" << std::endl;
 }
 
-void LevelB::update(float delta_time) {
-    m_state.player->update(delta_time, m_state.player, m_state.enemies, ENEMY_COUNT, NULL, 0, m_state.map);
+void LevelB::update(float delta_time, bool game_status) {
+    m_state.player->update(delta_time, m_state.player, m_state.enemies, ENEMY_COUNT, NULL, 0, m_state.map, game_status);
 
     // add more enemies randomly around the player
 
     // for (int i = 0; i < ENEMY_COUNT; i++) {
     for (int i = 0; i < m_state.enemies.size(); i++) {
         float distance_from_player = glm::distance(m_state.player->get_position(), m_state.enemies[i]->get_position());
-        if (!m_state.enemies[i]->get_is_active() || distance_from_player > 14.0f) {
+        if (!m_state.enemies[i]->get_is_active() || distance_from_player > 17.0f) {
             m_state.enemies[i]->spawn(m_state.player, m_view_x, m_view_y);
         }
-        m_state.enemies[i]->update(delta_time, m_state.player, m_state.enemies, ENEMY_COUNT, NULL, 0, m_state.map);
+        m_state.enemies[i]->update(delta_time, m_state.player, m_state.enemies, ENEMY_COUNT, NULL, 0, m_state.map, game_status);
     }
     // std::cout << "Level B update: done" << std::endl;
 }
