@@ -79,7 +79,7 @@
       <AdditionalIncludeDirectories>C:\SDL\glew\include;C:\SDL\SDL2\include;C:\SDL\SDL2_image\include;C:\SDL\SDL2_mixer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\SDL\glew\lib\Release\Win32;C:\SDL\SDL2\lib\x86;C:\SDL\SDL2_image\lib\x86;C:\SDL\SDL2_mixer\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;glew32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -133,11 +133,32 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="ShaderProgram.cpp" />
+    <ClInclude Include="Entity.h" />
+    <ClInclude Include="Level_A.h" />
+    <ClInclude Include="Level_B.h" />
+    <ClInclude Include="Level_C.h" />
+    <ClInclude Include="Level_Menu.h" />
+    <ClInclude Include="Map.h" />
+    <ClInclude Include="scene.h" />
+    <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="sprite.hpp" />
+    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Utility.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ShaderProgram.h" />
+    <ClCompile Include="AI.cpp" />
+    <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="helper.cpp" />
+    <ClCompile Include="Level_A.cpp" />
+    <ClCompile Include="Level_B.cpp" />
+    <ClCompile Include="Level_C.cpp" />
+    <ClCompile Include="Level_Menu.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Map.cpp" />
+    <ClCompile Include="scene.cpp" />
+    <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="sprite.cpp" />
+    <ClCompile Include="Utility.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

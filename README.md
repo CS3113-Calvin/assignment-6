@@ -2,6 +2,13 @@
 
 Vampire Survivors like game
 
+enemy states:
+    idle_normal (2 frames)
+    walk_normal (6 frames)
+    idle_bounce (4 frames)
+    walk_bounce (6 frames) 
+
+https://caz-creates-games.itch.io/ducky-3
 Attributions:
 
 ## [Original Description](https://github.com/sebastianromerocruz/CS3113-material/blob/958561b6190fc22270239f6bcebe0bb08d7e0c89/assignments/project_6.md)
