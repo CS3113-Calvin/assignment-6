@@ -127,7 +127,7 @@ void initialize() {
     // Set up player
     g_player = new Entity(PLAYER);
     // g_player->set_entity_type();
-    g_player->set_position(glm::vec3(15.0f, -15.0f, 0.0f));
+    g_player->set_position(glm::vec3(15.0f, -40.0f, 0.0f));
     g_player->set_movement(glm::vec3(0.0f));
     // g_player->set_speed(3.5f);
     g_player->set_speed(5.0f);
@@ -153,12 +153,7 @@ void initialize() {
     g_player->m_animation_length[g_player->HIT]      = 2;
     g_player->m_animation_length[g_player->DIE]      = 14;
 
-    // g_player->m_animation_indices = g_player->m_animations[g_player->WALK];  // start George looking left
-    // g_player->move_left();
     g_player->set_curr_state(g_player->IDLE);
-    // g_player->set_curr_state(g_player->WALK_LEFT);
-    // g_player->set_movement(glm::vec3(-1.0f, 0.0f, 0.0f));
-    // g_player->m_animation_frames  = 4;
     g_player->m_animation_index = 0;
     g_player->m_animation_time  = 0.0f;
     g_player->m_animation_cols  = 14;
@@ -167,8 +162,6 @@ void initialize() {
     g_player->set_width(0.6f);
     g_player->set_scale(3.8f);
     g_player->m_jumping_power = 8.0f;
-    // g_player->set_name("Player");
-    // g_player->m_lives         = g_player_lives;
 
     // ————— LEVEL SETUP ————— //
     g_level_menu = new LevelMenu();
@@ -271,7 +264,7 @@ void process_input() {
                     case SDLK_RETURN:
                         // ————— SWITCHING SCENES ————— //
                         if (g_current_scene == g_level_menu && g_game_status == RUNNING) {
-                            switch_to_scene(g_level_c);
+                            switch_to_scene(g_level_a);
                         }
                         break;
                     default:
@@ -306,7 +299,7 @@ void update() {
         // ————— UPDATING THE SCENE (i.e. map, character, enemies...) ————— //
         g_current_scene->update(FIXED_TIMESTEP);
 
-        if (g_current_scene->m_state.player->m_hit) {
+        if (g_current_scene->m_state.player->m_hit && g_game_status == RUNNING) {
             g_player_lives--;
             g_current_scene->m_state.player->m_hit = false;
         }
@@ -342,6 +335,9 @@ void update() {
         }
     } else if (g_current_scene == g_level_c) {
         // top edge
+        if (g_current_scene->m_state.player->get_position().y > LEVEL1_TOP_EDGE - g_current_scene->m_state.player->get_height() / 2.0f) {
+            switch_to_scene(g_level_b);
+        }
         // if (g_current_scene->m_state.player->get_position().y > LEVEL3_TOP_EDGE) {
         //     switch_to_scene(g_level_a);
         // }

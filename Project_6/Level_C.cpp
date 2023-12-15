@@ -81,6 +81,8 @@ void LevelC::initialize(Entity* player, GLuint g_fontsheet_texture_id, float vie
     m_state.map           = new Map(LEVEL_WIDTH, LEVEL_HEIGHT, LEVEL_C_DATA, map_texture_id, 1.0f, 14, 11);
 
     m_state.player = player;
+    glm::vec3 old_position = m_state.player->get_position();
+    player->set_position(glm::vec3(old_position.x - 32.0f, -2.0f, 0.0f));
 
     // Win flag //
     // Heart (16, -30)
@@ -141,7 +143,8 @@ void LevelC::update(float delta_time) {
 
     // add more enemies randomly around the player
     for (int i = 0; i < m_state.enemies.size(); i++) {
-        if (!m_state.enemies[i]->get_is_active()) {
+        float distance_from_player = glm::distance(m_state.player->get_position(), m_state.enemies[i]->get_position());
+        if (!m_state.enemies[i]->get_is_active() || distance_from_player > 14.0f) {
             m_state.enemies[i]->spawn(m_state.player, m_view_x, m_view_y);
         }
         m_state.enemies[i]->update(delta_time, m_state.player, m_state.enemies, ENEMY_COUNT, NULL, 0, m_state.map);

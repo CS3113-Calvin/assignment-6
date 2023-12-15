@@ -75,8 +75,8 @@ Entity::Entity(EntityType entity_type) {
 
 void Entity::spawn(Entity* player, float view_x, float view_y) {
     glm::vec3 player_position = player->get_position();
-    view_x = view_x / 2;
-    view_y = view_y / 2;
+    view_x = view_x * (3.0f/5.0f);
+    view_y = view_y * (3.0f/5.0f);
     float rand_x = (rand() % 2) ? Utility::rand_float_range(player_position.x + view_x, player_position.x + view_x + 5.0f) : Utility::rand_float_range(player_position.x-view_x - 5.0f, player_position.x-view_x);
     float rand_y = (rand() % 2) ? Utility::rand_float_range(player_position.y + view_y, player_position.y + view_y + 5.0f) : Utility::rand_float_range(player_position.y-view_y - 5.0f, player_position.y-view_y);
 
@@ -376,7 +376,6 @@ void const Entity::set_curr_state(int new_state) {
         if (m_curr_state != new_state) {
             if (new_state == WALK_DOWN || new_state == WALK_UP || new_state == WALK_LEFT || new_state == WALK_RIGHT) {
                 m_animation_frames = m_animation_length[WALK];
-                // m_animation_frames  = 8;
             } else {
                 m_animation_frames = m_animation_length[new_state];
             }
@@ -455,7 +454,9 @@ void Entity::update(float delta_time, Entity* player, std::vector<Entity*> objec
     m_position.y += m_velocity.y * delta_time;
     // clamp y position to map
     // std::cout << m_entity_type << " Player position x: " << m_position.x << std::endl;
-    m_position.y = glm::clamp(m_position.y, -map->get_height() + m_height / 2.0f, 0.0f - m_height / 2.0f + 1.0f);
+    if (m_entity_type == PLAYER) {
+        m_position.y = glm::clamp(m_position.y, -map->get_height() + m_height / 2.0f, 0.0f - m_height / 2.0f + 1.0f);
+    }
 
     // std::cout << "collision before bottom: " << std::boolalpha << m_collided_bottom << std::endl;
     check_collision_y(map);
@@ -475,7 +476,9 @@ void Entity::update(float delta_time, Entity* player, std::vector<Entity*> objec
     m_position.x += m_velocity.x * delta_time;
     // std::cout << "Map width: " << map->get_width() << std::endl;
     // std::cout << "Player position y: " << g_current_scene->m_state.player->get_position().y << std::endl;
-    m_position.x = glm::clamp(m_position.x, 0.0f + m_width / 2.0f - 1.0f, map->get_width() - m_width / 2.0f - 1.0f);
+    if (m_entity_type == PLAYER) {
+        m_position.x = glm::clamp(m_position.x, 0.0f + m_width / 2.0f - 1.0f, map->get_width() - m_width / 2.0f - 1.0f);
+    }
     // std::cout << "Player position x after clamp: " << m_position.x << std::endl;
 
     check_collision_x(map);
@@ -532,8 +535,8 @@ void const Entity::check_collision_y(std::vector<Entity*> collidable_entities, i
             float y_overlap                    = fabs(y_distance - (m_height / 2.0f) - (collidable_entity->get_height() / 2.0f));
             float y_collidable_entity_velocity = collidable_entity->get_velocity().y;
             if (m_velocity.y < 0 || y_collidable_entity_velocity > 0) {
-                if (m_entity_type != PLAYER)
-                    m_position.y += y_overlap;
+                // if (m_entity_type != PLAYER)
+                //     m_position.y += y_overlap;
                 // std::cout << "m_velocity.y: " << m_velocity.y << std::endl;
                 // std::cout << "y_collidable_entity_velocity: " << y_collidable_entity_velocity << std::endl;
                 m_velocity.y      = 0;
@@ -542,8 +545,8 @@ void const Entity::check_collision_y(std::vector<Entity*> collidable_entities, i
                 // collidable_entity->m_is_active = false;  // turn off enemy
                 // collidable_entity->set_is_alive(false);  // turn off enemy
             } else if (m_velocity.y > 0 || y_collidable_entity_velocity < 0) {
-                if (m_entity_type != PLAYER)
-                    m_position.y -= y_overlap;
+                // if (m_entity_type != PLAYER)
+                //     m_position.y -= y_overlap;
                 m_velocity.y   = 0;
                 m_collided_top = true;
                 // std::cout << "collided_top with enemy" << std::endl;
@@ -562,15 +565,15 @@ void const Entity::check_collision_x(std::vector<Entity*> collidable_entities, i
             float x_overlap                    = fabs(x_distance - (m_width / 2.0f) - (collidable_entity->get_width() / 2.0f));
             float x_collidable_entity_velocity = collidable_entity->get_velocity().x;
             if (m_velocity.x > 0 || x_collidable_entity_velocity < 0) {
-                if (m_entity_type != PLAYER)
-                    m_position.x -= x_overlap;
+                // if (m_entity_type != PLAYER)
+                //     m_position.x -= x_overlap;
                 m_velocity.x     = 0;
                 m_collided_right = true;
                 // std::cout << "collided_right with enemy" << std::endl;
                 // if (m_invulnerability_time) = false;  // lose game
             } else if (m_velocity.x < 0 || x_collidable_entity_velocity > 0) {
-                if (m_entity_type != PLAYER)
-                    m_position.x += x_overlap;
+                // if (m_entity_type != PLAYER)
+                //     m_position.x += x_overlap;
                 m_velocity.x    = 0;
                 m_collided_left = true;
                 // std::cout << "collided_left with enemy" << std::endl;
