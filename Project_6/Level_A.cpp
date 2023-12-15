@@ -73,11 +73,6 @@ std::pair<int, int> LEVEL_A_DATA[] = {
 };
 
 LevelA::~LevelA() {
-    // delete[] m_state.enemies;
-    delete m_state.player;
-    delete m_state.map;
-    Mix_FreeChunk(m_state.jump_sfx);
-    Mix_FreeMusic(m_state.bgm);
 }
 
 void LevelA::initialize(Entity* player, GLuint g_fontsheet_texture_id, float view_x, float view_y) {

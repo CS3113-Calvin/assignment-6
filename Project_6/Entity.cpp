@@ -404,12 +404,15 @@ void Entity::update(float delta_time, Entity* player, std::vector<Entity*> objec
         if (m_curr_state == ATTACK_1 || m_curr_state == ATTACK_2) {
             for (int i = 0; i < object_count; i++) {
                 Entity* object     = objects[i];
-                float   x_distance = fabs(m_position.x - object->m_position.x) - ((m_width + object->m_width) / 2.0f);
-                float   y_distance = fabs(m_position.y - object->m_position.y) - ((m_height + object->m_height) / 2.0f);
+                if ((object->get_position().x >= m_position.x && m_flip == 0) || (object->get_position().x <= m_position.x && m_flip == 1)) {
+                    // only kill enemies to the right
+                    float   x_distance = fabs(m_position.x - object->m_position.x) - ((m_width + object->m_width) / 2.0f);
+                    float   y_distance = fabs(m_position.y - object->m_position.y) - ((m_height + object->m_height) / 2.0f);
 
-                if (x_distance < 1.25f && y_distance < 0.25f) {
-                    object->m_is_active = false;
-                    object->set_is_alive(false);
+                    if (x_distance < 1.25f && y_distance < 0.25f) {
+                        object->m_is_active = false;
+                        object->set_is_alive(false);
+                    }
                 }
             }
         }
